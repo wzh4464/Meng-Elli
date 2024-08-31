@@ -231,40 +231,33 @@ void FLED::drawFLED(Mat ImgC, double ust_time)
 
 
 }
-void FLED::drawFLED(Mat ImgG,string savepath)
+
+void FLED::drawFLED(Mat ImgG, string savepath)
 {
-	char arcnum[128];
-	Mat Img_T = ImgG.clone();
-	cvtColor(Img_T, Img_T, cv::COLOR_GRAY2BGR);
-//	Mat Img_T = ImgG;
-	cv::RotatedRect temp;
-	//for (int i = 0; i < FSA_Lines.size(); i++)
-	//{
-	//	cv::line(Img_T, Point(FSA_Lines[i].st.y, FSA_Lines[i].st.x), Point(FSA_Lines[i].ed.y, FSA_Lines[i].ed.x), cv::Scalar(255, 0, 0), 2);
-	//}
-	for (int i = 0; i < detEllipses.size(); i++)
-	{
-		//if (detEllipseScore[i] < 0.7)
-		//	continue;
-		temp.center.x = detEllipses[i].center.y;
-		temp.center.y = detEllipses[i].center.x;
-		temp.size.height = detEllipses[i].size.width;
-		temp.size.width = detEllipses[i].size.height;
-		temp.angle = -detEllipses[i].angle;
-		ellipse(Img_T, temp, cv::Scalar(0, 0, 255), 2);
-#if defined(__GNUC__)
-		sprintf(arcnum, "%.2f", detEllipseScore[i]);
-#else
-                sprintf_s(arcnum, "%.2f", detEllipseScore[i]);
-#endif
-		//sprintf_s(arcnum, "%.2f", detEllipseScore[i]);
-		cv::putText(Img_T, string(arcnum), temp.center, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 1);
-		cout << "The " << i << "th ellipse's score is :" << detEllipseScore[i] << endl;
-	}
-	safeImshow("Ellipses", Img_T);
-	if(savepath.length() > 0)
-		printf("Save to %s\n", savepath.c_str());
-		imwrite(savepath, Img_T);
+    Mat Img_T = ImgG.clone();
+    cvtColor(Img_T, Img_T, cv::COLOR_GRAY2BGR);
+    cv::RotatedRect temp;
+
+    for (int i = 0; i < detEllipses.size(); i++)
+    {
+        temp.center.x = detEllipses[i].center.y;
+        temp.center.y = detEllipses[i].center.x;
+        temp.size.height = detEllipses[i].size.width;
+        temp.size.width = detEllipses[i].size.height;
+        temp.angle = -detEllipses[i].angle;
+        
+        // 使用绿色绘制椭圆
+        ellipse(Img_T, temp, cv::Scalar(0, 255, 0), 2);
+        
+        // 移除了文本标注
+    }
+
+    safeImshow("Ellipses", Img_T);
+    if(savepath.length() > 0)
+    {
+        printf("Save to %s\n", savepath.c_str());
+        imwrite(savepath, Img_T);
+    }
 }
 
 void FLED::writeFLED(string filepath, string filename, double useTime)
