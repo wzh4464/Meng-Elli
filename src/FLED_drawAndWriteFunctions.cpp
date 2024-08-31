@@ -1,5 +1,23 @@
 #include "FLED.h"
 
+// 检查是否有显示支持的函数
+bool isDisplayAvailable() {
+    const char* display = std::getenv("DISPLAY");
+    if (display == nullptr || std::string(display).empty()) {
+        std::cout << "No display available, skipping visualization." << std::endl;
+        return false;
+    }
+    return true;
+}
+
+// 安全的 imshow 包装函数
+void safeImshow(const std::string& windowName, const cv::Mat& image) {
+    if (isDisplayAvailable()) {
+        cv::imshow(windowName, image);
+    } else {
+        std::cout << "Skipping imshow for window: " << windowName << std::endl;
+    }
+}
 
 void FLED::writeDetailData()
 {
@@ -104,7 +122,7 @@ void FLED::drawEdgeContours()
 			_Img_T[edgeContours[i][j].x*iCOLS + edgeContours[i][j].y] = 0;
 		}
 	}
-	cv::imshow("EdgeContours", Img_T);
+	safeImshow("EdgeContours", Img_T);
 	cv::imwrite("Output Data/EdgeContours.png", Img_T);
 }
 
@@ -128,7 +146,7 @@ void FLED::drawDPContours()
 		cv::putText(Img_T, string(arcnum), Point(arc_mid.y, arc_mid.x + 2), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 1);
 	}
 
-	cv::imshow("dpContours", Img_T);
+	safeImshow("dpContours", Img_T);
 	cv::waitKey(1);
 	cv::imwrite("Output Data/DPContours.png", Img_T);
 }
@@ -159,7 +177,7 @@ void FLED::drawFSA_ArcContours()
 
 	}
 
-	cv::imshow("FSA_ArcContours", Img_T);
+	safeImshow("FSA_ArcContours", Img_T);
 	cv::imwrite("Output Data/FSA_ArcContours.png", Img_T);
 }
 
@@ -178,8 +196,8 @@ void FLED::drawEllipses()
 		temp.angle = -detEllipses[i].angle;
 		ellipse(Img_T, temp, cv::Scalar(0, 0, 255), 2);
 	}
-	cv::imshow("Ellipses", Img_T);
-	cout << "The number of ellipses��" << detEllipses.size() << endl;
+	safeImshow("Ellipses", Img_T);
+	cout << "The number of ellipses��" << detEllipses.size() << endl;
 }
 void FLED::drawFLED(Mat ImgC, double ust_time)
 {
@@ -195,7 +213,7 @@ void FLED::drawFLED(Mat ImgC, double ust_time)
 		
 		ellipse(Img_T, temp, cv::Scalar(0, 0, 255), 2);
 	}
-	imshow("AMED", Img_T);
+	safeImshow("AMED", Img_T);
 
 	char TimeUsing[128];
 	if (ust_time > 0)
@@ -243,8 +261,9 @@ void FLED::drawFLED(Mat ImgG,string savepath)
 		cv::putText(Img_T, string(arcnum), temp.center, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 1);
 		cout << "The " << i << "th ellipse's score is :" << detEllipseScore[i] << endl;
 	}
-	cv::imshow("Ellipses", Img_T);
+	safeImshow("Ellipses", Img_T);
 	if(savepath.length() > 0)
+		printf("Save to %s\n", savepath.c_str());
 		imwrite(savepath, Img_T);
 }
 
