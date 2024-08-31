@@ -1,0 +1,63 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "clean-cmake-build",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "rm -rf ${workspaceFolder}/cmake-build/*"
+            ],
+            "problemMatcher": [],
+            "detail": "Clean the contents of the cmake-build folder."
+        },
+        {
+            "label": "create-cmake-build-dir",
+            "type": "shell",
+            "command": "mkdir",
+            "args": [
+                "-p",
+                "${workspaceFolder}/cmake-build"
+            ],
+            "problemMatcher": [],
+            "detail": "Create cmake-build directory if it doesn't exist."
+        },
+        {
+            "label": "cmake-configure",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-DCMAKE_BUILD_TYPE=Debug",
+                ".."
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/cmake-build"
+            },
+            "problemMatcher": [],
+            "detail": "Configure the project with CMake.",
+            "dependsOn": [
+                "create-cmake-build-dir",
+                "clean-cmake-build"
+            ]
+        },
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-j"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/cmake-build"
+            },
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": "cmake-configure",
+            "detail": "Build the project with Make."
+        }
+    ]
+}

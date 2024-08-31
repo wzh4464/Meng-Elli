@@ -8,4 +8,5 @@
 
 *.mexw64
 
-.vscode
+cmake-build/**
+DetailAAMED.aamed
